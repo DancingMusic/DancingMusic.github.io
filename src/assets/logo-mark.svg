@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MusicDance">
+  <defs>
+    <linearGradient id="md-bar" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%"  stop-color="#6366f1"/>
+      <stop offset="55%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <radialGradient id="md-dot" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#fff"     stop-opacity="1"/>
+      <stop offset="40%" stop-color="#fda4ec" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ec4899" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- spectrum bars (5 条，中间最高，左右对称) -->
+  <g fill="url(#md-bar)">
+    <rect x="6"  y="34" width="7" height="20" rx="3.5"/>
+    <rect x="17" y="24" width="7" height="30" rx="3.5"/>
+    <rect x="28" y="14" width="8" height="40" rx="4"/>
+    <rect x="40" y="24" width="7" height="30" rx="3.5"/>
+    <rect x="51" y="34" width="7" height="20" rx="3.5"/>
+  </g>
+
+  <!-- beat dot (在最高条正上方，带发光晕) -->
+  <circle cx="32" cy="8" r="7" fill="url(#md-dot)"/>
+  <circle cx="32" cy="8" r="2.6" fill="#ffffff"/>
+</svg>

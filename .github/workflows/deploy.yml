@@ -1,0 +1,76 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Triggered by main repo after a release is published
+  repository_dispatch:
+    types: [deploy-site]
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site repo
+        uses: actions/checkout@v4
+
+      - name: Fetch latest release from main repo
+        env:
+          GH_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "::group::Downloading latest release artifact"
+          mkdir -p _site/app
+
+          # Download the production build tarball from the private main repo
+          gh release download \
+            --repo DancingMusic/DancingMusic \
+            --pattern 'dancingmusic-dist.tar.gz' \
+            --dir /tmp/release \
+            2>&1 || {
+              echo "::warning::No release artifact found. Deploying landing page only."
+            }
+
+          if [ -f /tmp/release/dancingmusic-dist.tar.gz ]; then
+            tar -xzf /tmp/release/dancingmusic-dist.tar.gz -C _site/app
+            echo "Production build extracted to _site/app/"
+          fi
+          echo "::endgroup::"
+
+      - name: Assemble site
+        run: |
+          # Copy landing page and static assets into _site/
+          cp index.html _site/
+          cp -r src _site/
+
+          # Create .nojekyll to bypass Jekyll processing
+          touch _site/.nojekyll
+
+          echo "Site assembled:"
+          find _site -type f | head -30
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
