@@ -191,10 +191,13 @@
       margin-bottom: 32px;
     }
 
+    .arch-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
     .arch-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
+      min-width: 480px;
     }
 
     .arch-table th,
@@ -212,7 +215,7 @@
     }
 
     .arch-table td { color: var(--muted); font-size: .95rem; }
-    .arch-table td:first-child { color: var(--text); font-weight: 500; }
+    .arch-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
 
     /* ---- Footer ---- */
     footer {
@@ -301,6 +304,7 @@
     <div class="inner">
       <h2>Architecture</h2>
       <p>A modular monorepo with independent SDK submodules for clean separation of concerns.</p>
+      <div class="arch-table-wrap">
       <table class="arch-table">
         <thead>
           <tr><th>Module</th><th>Responsibility</th></tr>
@@ -312,6 +316,7 @@
           <tr><td>DancingPluginSdk</td><td>Plugin development SDK — types, lifecycle, audio data interfaces</td></tr>
         </tbody>
       </table>
+      </div>
     </div>
   </section>
 
