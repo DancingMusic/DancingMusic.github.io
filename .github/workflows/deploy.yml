@@ -36,14 +36,33 @@ jobs:
           echo "::group::Downloading latest release artifact"
           mkdir -p _site/app
 
-          # Download the production build tarball from the private main repo
-          gh release download \
-            --repo DancingMusic/DancingMusic \
-            --pattern 'dancingmusic-dist.tar.gz' \
-            --dir /tmp/release \
-            2>&1 || {
-              echo "::warning::No release artifact found. Deploying landing page only."
-            }
+          # Determine which tag to download (from dispatch payload or latest)
+          TAG="${{ github.event.client_payload.tag }}"
+
+          # Download the production build tarball from the main repo
+          if [ -n "$TAG" ]; then
+            gh release download "$TAG" \
+              --repo DancingMusic/DancingMusic \
+              --pattern 'dancingmusic-dist.tar.gz' \
+              --dir /tmp/release \
+              2>&1 || {
+                echo "::warning::No release artifact found for tag $TAG. Deploying landing page only."
+              }
+          else
+            # Fallback: try latest release (including pre-releases)
+            LATEST_TAG=$(gh release list --repo DancingMusic/DancingMusic --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || true)
+            if [ -n "$LATEST_TAG" ]; then
+              gh release download "$LATEST_TAG" \
+                --repo DancingMusic/DancingMusic \
+                --pattern 'dancingmusic-dist.tar.gz' \
+                --dir /tmp/release \
+                2>&1 || {
+                  echo "::warning::No release artifact found. Deploying landing page only."
+                }
+            else
+              echo "::warning::No releases found. Deploying landing page only."
+            fi
+          fi
 
           if [ -f /tmp/release/dancingmusic-dist.tar.gz ]; then
             tar -xzf /tmp/release/dancingmusic-dist.tar.gz -C _site/app
