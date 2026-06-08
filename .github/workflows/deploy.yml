@@ -33,17 +33,35 @@ jobs:
         run: |
           set -euo pipefail
 
+          if [ -n "${GH_TOKEN:-}" ]; then
+            echo "Using MAIN_REPO_TOKEN for main repository release download."
+          else
+            echo "::warning::MAIN_REPO_TOKEN is missing; falling back to default workflow token if available."
+          fi
+
           echo "::group::Downloading latest release artifact"
           mkdir -p _site/app
 
-          # Download the production build tarball from the private main repo
-          gh release download \
-            --repo DancingMusic/DancingMusic \
-            --pattern 'dancingmusic-dist.tar.gz' \
-            --dir /tmp/release \
-            2>&1 || {
-              echo "::warning::No release artifact found. Deploying landing page only."
-            }
+          # Download the production build tarball from the main repo
+          RELEASE_TAG="${{ github.event.client_payload.tag }}"
+          if [ -n "${RELEASE_TAG}" ]; then
+            gh release download \
+              "$RELEASE_TAG" \
+              --repo DancingMusic/DancingMusic \
+              --pattern 'dancingmusic-dist.tar.gz' \
+              --dir /tmp/release \
+              2>&1 || {
+                echo "::warning::No release artifact found for ${RELEASE_TAG}. Deploying landing page only."
+              }
+          else
+            gh release download \
+              --repo DancingMusic/DancingMusic \
+              --pattern 'dancingmusic-dist.tar.gz' \
+              --dir /tmp/release \
+              2>&1 || {
+                echo "::warning::No release artifact found. Deploying landing page only."
+              }
+          fi
 
           if [ -f /tmp/release/dancingmusic-dist.tar.gz ]; then
             tar -xzf /tmp/release/dancingmusic-dist.tar.gz -C _site/app
