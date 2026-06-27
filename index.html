@@ -687,7 +687,7 @@
           <li data-i18n="sdkBullet2">Build ESM bundles that can be loaded dynamically.</li>
           <li data-i18n="sdkBullet3">Pin production URLs to version tags instead of main branches.</li>
         </ul>
-        <a class="doc-link" href="https://github.com/DancingMusic" data-i18n="browseSdk">Browse SDK repositories</a>
+        <a class="doc-link" href="https://github.com/DancingMusic/MusicConnect" data-i18n="browseSdk">Open MusicConnect</a>
       </article>
 
       <article class="doc-card">
@@ -701,7 +701,7 @@
           <li data-i18n="connectorBullet2">Add contract tests for search and stream resolution.</li>
           <li data-i18n="connectorBullet3">Provide a docs demo page for quick validation.</li>
         </ul>
-        <a class="doc-link" href="https://github.com/DancingMusic" data-i18n="viewConnectorExamples">View connector examples</a>
+        <a class="doc-link" href="https://github.com/DancingMusic/MusicStore" data-i18n="viewConnectorExamples">Propose a MusicStore MR</a>
       </article>
 
       <article class="doc-card">
@@ -716,22 +716,21 @@
           <li data-i18n="pluginBullet2">Use the shared audio analysis contract.</li>
           <li data-i18n="pluginBullet3">Expose metadata so the app can list and activate the plugin.</li>
         </ul>
-        <a class="doc-link" href="https://github.com/DancingMusic" data-i18n="explorePluginSdk">Explore plugin SDK</a>
+        <a class="doc-link" href="https://github.com/DancingMusic/DancingPluginSdk" data-i18n="explorePluginSdk">Explore plugin SDK</a>
       </article>
 
       <article class="doc-card">
-        <h3 data-i18n="verifyTitle">Verify downloads</h3>
-        <p data-i18n="verifyText">
-          Public packages are attached to the DancingMusic main repository
-          releases. Use the generated metadata to verify version, build
-          identity, and release status.
+        <h3 data-i18n="danceSourceTitle">Publish a Dancing plugin source</h3>
+        <p data-i18n="danceSourceText">
+          Dance plugin source catalogs and store integration changes should go
+          through the DancingStore contract repository.
         </p>
         <ul>
-          <li data-i18n="verifyBullet1">Latest metadata is available at `releases.json`.</li>
-          <li data-i18n="verifyBullet2">Downloads are published as main repository release assets.</li>
-          <li data-i18n="verifyBullet3">Source release URLs are not used as public links.</li>
+          <li data-i18n="danceSourceBullet1">Keep plugin source metadata separate from host UI.</li>
+          <li data-i18n="danceSourceBullet2">Use the DancingStore contract for catalog changes.</li>
+          <li data-i18n="danceSourceBullet3">Submit repository changes as a merge request.</li>
         </ul>
-        <a class="doc-link" href="releases.json" data-i18n="openReleaseMetadata">Open release metadata</a>
+        <a class="doc-link" href="https://github.com/DancingMusic/DancingStore" data-i18n="openDanceStoreMr">Propose a DancingStore MR</a>
       </article>
     </section>
 
@@ -795,25 +794,25 @@
         sdkBullet1: "Keep implementation repositories independent.",
         sdkBullet2: "Build ESM bundles that can be loaded dynamically.",
         sdkBullet3: "Pin production URLs to version tags instead of main branches.",
-        browseSdk: "Browse SDK repositories",
+        browseSdk: "Open MusicConnect",
         connectorTitle: "Publish a music connector",
         connectorText: "A connector should expose search, playlist, stream URL, and optional lyrics capabilities through the public MusicStore interface.",
         connectorBullet1: "Ship a `dist/index.js` ESM bundle.",
         connectorBullet2: "Add contract tests for search and stream resolution.",
         connectorBullet3: "Provide a docs demo page for quick validation.",
-        viewConnectorExamples: "View connector examples",
+        viewConnectorExamples: "Propose a MusicStore MR",
         pluginTitle: "Build a Dance plugin",
         pluginText: "Dance plugins receive audio and playback context from the app, then render visual stages through the plugin lifecycle. The built-in Night Sky stage follows the same host-facing plugin boundary.",
         pluginBullet1: "Keep rendering code inside the plugin.",
         pluginBullet2: "Use the shared audio analysis contract.",
         pluginBullet3: "Expose metadata so the app can list and activate the plugin.",
         explorePluginSdk: "Explore plugin SDK",
-        verifyTitle: "Verify downloads",
-        verifyText: "Published packages are attached to DancingMusic main repository releases. Use the generated metadata to verify version, build identity, and release status.",
-        verifyBullet1: "Latest metadata is available at `releases.json`.",
-        verifyBullet2: "Downloads are published as main repository release assets.",
-        verifyBullet3: "Source release URLs are not used as public links.",
-        openReleaseMetadata: "Open release metadata",
+        danceSourceTitle: "Publish a Dancing plugin source",
+        danceSourceText: "Dance plugin source catalogs and store integration changes should go through the DancingStore contract repository.",
+        danceSourceBullet1: "Keep plugin source metadata separate from host UI.",
+        danceSourceBullet2: "Use the DancingStore contract for catalog changes.",
+        danceSourceBullet3: "Submit repository changes as a merge request.",
+        openDanceStoreMr: "Propose a DancingStore MR",
         releaseMetadata: "Release metadata",
         releaseNote: "This page is the root DancingMusic entry. It stays focused on app downloads, package status, and integration notes.",
         viewMetadataJson: "View Metadata JSON"
@@ -860,25 +859,25 @@
         sdkBullet1: "保持实现仓库独立。",
         sdkBullet2: "构建可动态加载的 ESM bundle。",
         sdkBullet3: "生产 URL 固定到版本 tag，而不是 main 分支。",
-        browseSdk: "浏览 SDK 仓库",
+        browseSdk: "打开 MusicConnect",
         connectorTitle: "发布音乐连接器",
         connectorText: "连接器应通过公开 MusicStore 接口暴露搜索、歌单、音频源和可选歌词能力。",
         connectorBullet1: "发布 `dist/index.js` ESM bundle。",
         connectorBullet2: "为搜索和音频源解析添加契约测试。",
         connectorBullet3: "提供 docs 演示页用于快速验证。",
-        viewConnectorExamples: "查看连接器示例",
+        viewConnectorExamples: "向 MusicStore 提 MR",
         pluginTitle: "构建 Dance 插件",
         pluginText: "Dance 插件从应用接收音频与播放上下文，再通过插件生命周期渲染视觉舞台。内置 Night Sky 舞台也遵循同一插件边界。",
         pluginBullet1: "渲染代码保留在插件内部。",
         pluginBullet2: "使用共享音频分析契约。",
         pluginBullet3: "暴露元数据，便于应用列出和启用插件。",
         explorePluginSdk: "查看插件 SDK",
-        verifyTitle: "校验下载",
-        verifyText: "已发布的包会挂到 DancingMusic 主仓库 Release。你可以使用生成的元数据校验版本、构建身份和发布状态。",
-        verifyBullet1: "最新元数据位于 `releases.json`。",
-        verifyBullet2: "下载包作为主仓库 Release 资产发布。",
-        verifyBullet3: "源码 release URL 不作为公开下载链接。",
-        openReleaseMetadata: "打开发布元数据",
+        danceSourceTitle: "发布 Dancing 插件源",
+        danceSourceText: "Dance 插件源目录和商店接入变更应进入 DancingStore 契约仓库。",
+        danceSourceBullet1: "插件源元数据与宿主 UI 保持分离。",
+        danceSourceBullet2: "目录变更使用 DancingStore 契约。",
+        danceSourceBullet3: "通过 merge request 提交仓库变更。",
+        openDanceStoreMr: "向 DancingStore 提 MR",
         releaseMetadata: "发布元数据",
         releaseNote: "这个页面就是 DancingMusic 根入口，专注于 APP 下载、包状态和接入说明。",
         viewMetadataJson: "查看元数据 JSON"
