@@ -28,8 +28,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fetch latest release from main repo
+        id: release
         env:
-          GH_TOKEN: ${{ secrets.MAIN_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.MAIN_REPO_TOKEN || github.token }}
         run: |
           set -euo pipefail
 
@@ -52,6 +53,7 @@ jobs:
             # Fallback: try latest release (including pre-releases)
             LATEST_TAG=$(gh release list --repo DancingMusic/DancingMusic --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || true)
             if [ -n "$LATEST_TAG" ]; then
+              TAG="$LATEST_TAG"
               gh release download "$LATEST_TAG" \
                 --repo DancingMusic/DancingMusic \
                 --pattern 'dancingmusic-dist.tar.gz' \
@@ -68,16 +70,91 @@ jobs:
             tar -xzf /tmp/release/dancingmusic-dist.tar.gz -C _site/app
             echo "Production build extracted to _site/app/"
           fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
 
       - name: Assemble site
+        env:
+          GH_TOKEN: ${{ secrets.MAIN_REPO_TOKEN || github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
         run: |
-          # Copy landing page and static assets into _site/
-          cp index.html _site/
-          cp -r src _site/
+          # Copy homepage and static assets into _site/.
+          cp index.html _site/index.html
+          cp -r src _site/src
           cp -f favicon.ico apple-touch-icon.png _site/ 2>/dev/null || true
 
-          # Create .nojekyll to bypass Jekyll processing
+          if [ -n "$TAG" ]; then
+            RELEASE_JSON="$(gh release view "$TAG" --repo DancingMusic/DancingMusic --json tagName,targetCommitish,publishedAt,isPrerelease 2>/dev/null || true)"
+          else
+            RELEASE_JSON=""
+          fi
+
+          if [ -n "${RELEASE_JSON:-}" ]; then
+            jq \
+              '
+              {
+                current: {
+                  tag: .tagName,
+                  sourceCommit: .targetCommitish,
+                  publishedAt: .publishedAt,
+                  prerelease: .isPrerelease,
+                  apps: [
+                    {
+                      id: "web",
+                      name: "DancingMusic Web",
+                      platform: "Web",
+                      status: "available",
+                      openUrl: "https://dancingmusic.github.io/app/"
+                    },
+                    {
+                      id: "macos",
+                      name: "DancingMusic for macOS",
+                      platform: "macOS",
+                      status: "configured"
+                    },
+                    {
+                      id: "desktop",
+                      name: "DancingMusic Desktop",
+                      platform: "Windows / Linux",
+                      status: "configured"
+                    },
+                    {
+                      id: "mobile",
+                      name: "DancingMusic Mobile",
+                      platform: "iOS / Android",
+                      status: "planned"
+                    }
+                  ]
+                },
+                publicDistribution: {
+                  page: "https://dancingmusic.github.io/",
+                  releasePage: ("https://github.com/DancingMusic/DancingMusic/releases/tag/" + .tagName),
+                  downloadsBase: ("https://github.com/DancingMusic/DancingMusic/releases/download/" + .tagName + "/"),
+                  note: "The root homepage is published from DancingMusic.github.io. Public app packages are attached to DancingMusic/DancingMusic releases."
+                }
+              }
+              ' <<< "$RELEASE_JSON" > _site/releases.json
+          else
+            cp releases.json _site/releases.json
+          fi
+
+          mkdir -p _site/Apps
+          cat > _site/Apps/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta http-equiv="refresh" content="0; url=/">
+            <link rel="canonical" href="https://dancingmusic.github.io/">
+            <title>DancingMusic Apps</title>
+          </head>
+          <body>
+            <p>DancingMusic Apps moved to <a href="/">https://dancingmusic.github.io/</a>.</p>
+          </body>
+          </html>
+          HTML
+
           touch _site/.nojekyll
 
           echo "Site assembled:"

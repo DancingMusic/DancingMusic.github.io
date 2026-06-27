@@ -1,335 +1,1008 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DancingMusic — Music Visualization App</title>
-  <meta name="description" content="DancingMusic is a music visualization app with a plugin ecosystem. Experience real-time audio-reactive visuals." />
-  <meta name="theme-color" content="#0f172a" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DancingMusic</title>
+  <meta name="description" content="Download DancingMusic apps and find integration notes.">
   <style>
     :root {
-      --bg: #0f172a;
-      --bg-alt: #1e293b;
-      --card: #111827;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #a855f7;
-      --accent-glow: #c084fc;
-      --cyan: #22d3ee;
+      --bg: #070912;
+      --panel: rgba(18, 23, 34, 0.84);
+      --panel-soft: rgba(255, 255, 255, 0.055);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #f7f9ff;
+      --muted: rgba(247, 249, 255, 0.7);
+      --soft: rgba(247, 249, 255, 0.48);
+      --cyan: #7dd3fc;
+      --mint: #a7f3d0;
+      --amber: #fcd34d;
+      --shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
+      margin: 0;
+      color: var(--text);
+      font-family:
+        Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 10% 16%, rgba(125, 211, 252, 0.16), transparent 32%),
+        radial-gradient(circle at 82% 14%, rgba(167, 243, 208, 0.12), transparent 26%),
+        radial-gradient(circle at 70% 88%, rgba(252, 211, 77, 0.08), transparent 28%),
+        linear-gradient(145deg, #070912 0%, #111827 54%, #080910 100%);
     }
 
-    /* ---- Hero ---- */
-    .hero {
-      position: relative;
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 26px 0 48px;
+    }
+
+    .nav,
+    .brand,
+    .nav-actions,
+    .cta-row,
+    .download-actions,
+    .platform-line,
+    .doc-link,
+    footer {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+    }
+
+    .nav {
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 58px;
+    }
+
+    .brand {
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+        rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .mark img {
+      display: block;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+    }
+
+    .brand-title {
+      display: block;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .brand-subtitle {
+      display: block;
+      margin-top: 2px;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .nav-actions {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .lang-button {
+      min-height: 28px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 10px;
+      color: var(--muted);
+      background: transparent;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 760;
+      cursor: pointer;
+    }
+
+    .lang-button.active {
+      color: #061016;
+      background: linear-gradient(135deg, #86e7ff 0%, #bbf7d0 100%);
+    }
+
+    .chip,
+    .ghost-link,
+    .badge {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      min-height: 100vh;
-      padding: 60px 24px;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(168,85,247,.15), transparent),
-        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(34,211,238,.10), transparent),
-        var(--bg);
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='.6' fill='%23334155' fill-opacity='.3'/%3E%3C/svg%3E");
-      opacity: .4;
-    }
-
-    .hero-content { position: relative; z-index: 1; max-width: 720px; }
-
-    .logo-mark {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 24px;
-      border-radius: 20px;
-      filter: drop-shadow(0 0 24px rgba(34,130,238,.4));
-    }
-
-    h1 {
-      font-size: clamp(2.4rem, 6vw, 3.6rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, var(--accent-glow), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .tagline {
-      margin-top: 16px;
-      font-size: 1.15rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
       color: var(--muted);
-      line-height: 1.7;
+      font-size: 13px;
     }
 
-    .cta-row {
-      margin-top: 36px;
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .chip,
+    .ghost-link {
+      min-height: 36px;
+      padding: 0 13px;
     }
 
-    .btn {
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(380px, 0.58fr);
+      gap: 34px;
+      align-items: stretch;
+    }
+
+    .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 32px;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: transform .15s, box-shadow .2s;
-      cursor: pointer;
-      border: none;
+      margin-bottom: 18px;
+      color: var(--mint);
+      font-size: 13px;
+      font-weight: 760;
     }
 
-    .btn:hover { transform: translateY(-2px); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
-      color: #fff;
-      box-shadow: 0 4px 24px rgba(168,85,247,.35);
-    }
-    .btn-primary:hover { box-shadow: 0 8px 32px rgba(168,85,247,.5); }
-
-    .btn-secondary {
-      background: var(--bg-alt);
-      color: var(--text);
-      border: 1px solid rgba(148,163,184,.2);
-    }
-    .btn-secondary:hover { border-color: var(--accent); box-shadow: 0 0 16px rgba(168,85,247,.15); }
-
-    /* ---- Features ---- */
-    .features {
-      padding: 80px 24px;
-      max-width: 1080px;
-      margin: 0 auto;
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 0 7px rgba(167, 243, 208, 0.12);
     }
 
-    .features h2 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 48px;
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(48px, 6vw, 82px);
+      line-height: 0.95;
+      font-weight: 860;
     }
 
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .feature-card {
-      background: var(--card);
-      border: 1px solid rgba(148,163,184,.08);
-      border-radius: 16px;
-      padding: 32px 28px;
-      transition: border-color .2s, box-shadow .2s;
-    }
-
-    .feature-card:hover {
-      border-color: rgba(168,85,247,.3);
-      box-shadow: 0 0 24px rgba(168,85,247,.08);
-    }
-
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 16px;
-      display: block;
-    }
-
-    .feature-card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-    }
-
-    .feature-card p {
+    .lede {
+      max-width: 650px;
+      margin: 24px 0 0;
       color: var(--muted);
-      font-size: .95rem;
+      font-size: 19px;
+      line-height: 1.65;
+    }
+
+    .cta-row,
+    .download-actions {
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .primary,
+    .secondary,
+    .small-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font-weight: 820;
+    }
+
+    .primary,
+    .secondary {
+      min-height: 52px;
+      padding: 0 20px;
+      font-size: 15px;
+    }
+
+    .primary {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #061016;
+      background: linear-gradient(135deg, #86e7ff 0%, #bbf7d0 100%);
+      box-shadow: 0 18px 42px rgba(125, 211, 252, 0.22);
+    }
+
+    .primary.disabled {
+      color: var(--soft);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .secondary,
+    .small-button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .download-panel,
+    .platform-card,
+    .doc-card,
+    .release-panel {
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+        var(--panel);
+      backdrop-filter: blur(22px);
+    }
+
+    .download-panel {
+      display: flex;
+      min-height: 440px;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 26px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-label {
+      margin: 0 0 10px;
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .detected-platform {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.1;
+    }
+
+    .download-note {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 15px;
       line-height: 1.6;
     }
 
-    /* ---- Architecture ---- */
-    .architecture {
-      padding: 80px 24px;
-      background: linear-gradient(180deg, transparent, rgba(30,41,59,.5), transparent);
+    .download-file {
+      margin-top: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.045);
     }
 
-    .architecture .inner {
-      max-width: 800px;
-      margin: 0 auto;
-      text-align: center;
+    .file-name,
+    .meta-value,
+    .checksum {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
-    .architecture h2 {
-      font-size: 2rem;
-      margin-bottom: 16px;
+    .file-name {
+      margin: 0;
+      font-size: 16px;
+      overflow-wrap: anywhere;
     }
 
-    .architecture p {
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 32px;
+    .file-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
     }
 
-    .arch-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-    .arch-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      min-width: 480px;
+    .meta-box {
+      min-width: 0;
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.045);
     }
 
-    .arch-table th,
-    .arch-table td {
-      padding: 14px 18px;
-      border-bottom: 1px solid rgba(148,163,184,.1);
+    .meta-label {
+      margin: 0 0 6px;
+      color: var(--soft);
+      font-size: 12px;
     }
 
-    .arch-table th {
-      color: var(--accent-glow);
-      font-weight: 600;
-      font-size: .85rem;
+    .meta-value {
+      margin: 0;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .section-title {
+      margin: 54px 0 16px;
+      font-size: 24px;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .platform-card {
+      display: flex;
+      min-height: 206px;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .platform-card.available {
+      border-color: rgba(125, 211, 252, 0.28);
+    }
+
+    .platform-card.planned {
+      background: var(--panel-soft);
+    }
+
+    .platform-card.configured {
+      border-color: rgba(167, 243, 208, 0.2);
+      background:
+        linear-gradient(150deg, rgba(167, 243, 208, 0.08), rgba(255, 255, 255, 0.035)),
+        var(--panel);
+    }
+
+    .platform-line {
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .platform {
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: .06em;
     }
 
-    .arch-table td { color: var(--muted); font-size: .95rem; }
-    .arch-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+    .badge {
+      min-height: 28px;
+      padding: 0 9px;
+      color: var(--mint);
+      border-color: rgba(167, 243, 208, 0.26);
+      background: rgba(167, 243, 208, 0.09);
+      font-size: 12px;
+      font-weight: 780;
+    }
 
-    /* ---- Footer ---- */
-    footer {
-      text-align: center;
-      padding: 48px 24px;
+    .badge.planned {
+      color: var(--amber);
+      border-color: rgba(252, 211, 77, 0.2);
+      background: rgba(252, 211, 77, 0.1);
+    }
+
+    .badge.configured {
+      color: var(--mint);
+      border-color: rgba(167, 243, 208, 0.24);
+      background: rgba(167, 243, 208, 0.09);
+    }
+
+    .platform-card h3,
+    .doc-card h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .platform-card p,
+    .doc-card p,
+    .doc-card li {
       color: var(--muted);
-      font-size: .85rem;
-      border-top: 1px solid rgba(148,163,184,.08);
+      font-size: 14px;
+      line-height: 1.58;
     }
 
-    footer a { color: var(--accent-glow); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    .platform-card p,
+    .doc-card p {
+      margin: 12px 0 0;
+    }
 
-    /* ---- Responsive ---- */
-    @media (max-width: 640px) {
-      .hero { padding: 40px 16px; }
-      .features { padding: 48px 16px; }
-      .arch-table { font-size: .85rem; }
-      .arch-table th, .arch-table td { padding: 10px 12px; }
+    .small-button {
+      min-height: 38px;
+      padding: 0 13px;
+      font-size: 13px;
+    }
+
+    .small-button.disabled {
+      color: var(--soft);
+      cursor: default;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .doc-card,
+    .release-panel {
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .doc-card ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+    }
+
+    .doc-link {
+      width: fit-content;
+      min-height: 36px;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .release-panel {
+      margin-top: 16px;
+    }
+
+    .checksum {
+      margin: 14px 0 0;
+      color: var(--soft);
+      font-size: 12px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 34px;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1020px) {
+      .hero,
+      .platform-grid,
+      .docs-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .download-panel {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .nav,
+      footer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        margin-bottom: 36px;
+      }
+
+      .nav-actions {
+        justify-content: flex-start;
+      }
+
+      h1 {
+        font-size: 44px;
+      }
+
+      .lede {
+        font-size: 16px;
+      }
+
+      .file-meta {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
+  <main class="page">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="https://github.com/DancingMusic" aria-label="DancingMusic on GitHub">
+        <span class="mark">
+          <img src="src/assets/logo-rounded-square-white.png" alt="DancingMusic logo">
+        </span>
+        <span>
+          <span class="brand-title">DancingMusic</span>
+          <span class="brand-subtitle" data-i18n="brandSubtitle">Official downloads and integration notes</span>
+        </span>
+      </a>
+      <div class="nav-actions">
+        <span class="chip" id="currentTag">Checking latest release</span>
+        <div class="lang-switch" aria-label="Language">
+          <button class="lang-button" type="button" data-lang="zh">中文</button>
+          <button class="lang-button" type="button" data-lang="en">EN</button>
+        </div>
+        <a class="ghost-link" href="https://github.com/DancingMusic/DancingMusic" data-i18n="githubRepo">GitHub repo</a>
+      </div>
+    </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-content">
-      <img class="logo-mark" src="src/assets/logo.png" alt="DancingMusic logo" />
-      <h1>DancingMusic</h1>
-      <p class="tagline">
-        Real-time music visualization with a plugin ecosystem.<br />
-        Play, visualize, and share — on desktop and web.
+    <section class="hero">
+      <div>
+        <div class="eyebrow"><span class="pulse"></span><span data-i18n="eyebrow">Download center</span></div>
+        <h1 data-i18n="heroTitle">Download DancingMusic</h1>
+        <p class="lede" data-i18n="heroLead">
+          Get the right DancingMusic app for your device. This page detects your
+          system, recommends the best available package, and keeps public
+          downloads separated from the source build pipeline.
+        </p>
+        <div class="cta-row">
+          <a class="primary" id="recommendedAction" href="#available-apps" data-i18n="viewAppDownloads">View Downloads</a>
+          <a class="secondary" id="releaseStatusLink" href="https://github.com/DancingMusic/DancingMusic/releases" data-i18n="viewReleaseStatus">
+            View Release Status
+          </a>
+        </div>
+      </div>
+
+      <aside class="download-panel" id="recommended-download" aria-label="Recommended download">
+        <div>
+          <p class="panel-label" data-i18n="recommendedLabel">Recommended for this device</p>
+          <h2 class="detected-platform" id="detectedPlatform">Detecting system</h2>
+          <p class="download-note" id="platformNote">
+            Checking your browser platform and matching it with the available
+            DancingMusic packages.
+          </p>
+          <div class="download-actions">
+            <span class="primary disabled" id="nativeDownloadAction" data-i18n="nativeComingSoon">Native App Coming Soon</span>
+            <a class="secondary" id="panelPrimaryAction" href="https://dancingmusic.github.io/app/" data-i18n="openWebApp">
+              Open Web App
+            </a>
+          </div>
+        </div>
+
+        <div class="download-file">
+          <p class="panel-label" data-i18n="appChannels">App channels</p>
+          <p class="file-name" id="selectedAppName">DancingMusic</p>
+          <div class="file-meta">
+            <div class="meta-box">
+              <p class="meta-label" data-i18n="version">Version</p>
+              <p class="meta-value" id="releaseTag">Pending</p>
+            </div>
+            <div class="meta-box">
+              <p class="meta-label" data-i18n="webApp">Web App</p>
+              <p class="meta-value" data-i18n="available">Available</p>
+            </div>
+            <div class="meta-box">
+              <p class="meta-label" data-i18n="nativeApp">Native App</p>
+              <p class="meta-value" id="nativeChannelStatus" data-i18n="planned">Planned</p>
+            </div>
+            <div class="meta-box">
+              <p class="meta-label" data-i18n="synced">Synced</p>
+              <p class="meta-value" id="publishedAt">Pending</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <h2 class="section-title" id="available-apps" data-i18n="availableApps">Downloads</h2>
+    <section class="platform-grid" aria-label="Download apps by platform">
+      <article class="platform-card available" data-platform-card="web">
+        <div>
+          <div class="platform-line">
+            <span class="platform">Web</span>
+            <span class="badge" data-i18n="available">Available</span>
+          </div>
+          <h3>DancingMusic Web</h3>
+          <p data-i18n="webCardText">Use the app directly in your browser. This is the recommended entry while native installers are being prepared.</p>
+        </div>
+        <div class="download-actions">
+          <a class="small-button" href="https://dancingmusic.github.io/app/" data-i18n="open">Open</a>
+        </div>
+      </article>
+
+      <article class="platform-card configured" data-platform-card="macos">
+        <div>
+          <div class="platform-line">
+            <span class="platform">macOS</span>
+            <span class="badge configured" data-i18n="configured">Configured</span>
+          </div>
+          <h3 data-i18n="macApp">Mac App</h3>
+          <p data-i18n="macAppText">Signed macOS builds will appear here when desktop packaging is ready.</p>
+        </div>
+        <div class="download-actions">
+          <span class="small-button disabled" data-i18n="installerComingSoon">Installer coming soon</span>
+        </div>
+      </article>
+
+      <article class="platform-card configured" data-platform-card="desktop">
+        <div>
+          <div class="platform-line">
+            <span class="platform">Windows / Linux</span>
+            <span class="badge configured" data-i18n="configured">Configured</span>
+          </div>
+          <h3 data-i18n="desktopApp">Desktop App</h3>
+          <p data-i18n="desktopAppText">Installers for additional desktop platforms can be published as separate public package channels.</p>
+        </div>
+        <div class="download-actions">
+          <span class="small-button disabled" data-i18n="installerComingSoon">Installer coming soon</span>
+        </div>
+      </article>
+
+      <article class="platform-card planned" data-platform-card="mobile">
+        <div>
+          <div class="platform-line">
+            <span class="platform">iOS / Android</span>
+            <span class="badge planned" data-i18n="planned">Planned</span>
+          </div>
+          <h3 data-i18n="mobileApp">Mobile App</h3>
+          <p data-i18n="mobileAppText">Mobile packages will be listed here after the app channel is published.</p>
+        </div>
+        <div class="download-actions">
+          <span class="small-button disabled" data-i18n="comingSoon">Coming soon</span>
+        </div>
+      </article>
+    </section>
+
+    <h2 class="section-title" data-i18n="docsIntegration">Docs and Integration</h2>
+    <section class="docs-grid" aria-label="Documentation">
+      <article class="doc-card">
+        <h3 data-i18n="sdkTitle">Use Open SDK contracts</h3>
+        <p data-i18n="sdkText">
+          DancingMusic keeps SDK contracts separate from the app host. Music
+          connectors implement the MusicStore contract, while Dance visual
+          plugins implement the DancingPluginSdk lifecycle.
+        </p>
+        <ul>
+          <li data-i18n="sdkBullet1">Keep implementation repositories independent.</li>
+          <li data-i18n="sdkBullet2">Build ESM bundles that can be loaded dynamically.</li>
+          <li data-i18n="sdkBullet3">Pin production URLs to version tags instead of main branches.</li>
+        </ul>
+        <a class="doc-link" href="https://github.com/DancingMusic" data-i18n="browseSdk">Browse SDK repositories</a>
+      </article>
+
+      <article class="doc-card">
+        <h3 data-i18n="connectorTitle">Publish a music connector</h3>
+        <p data-i18n="connectorText">
+          A connector should expose search, playlist, stream URL, and optional
+          lyrics capabilities through the public MusicStore interface.
+        </p>
+        <ul>
+          <li data-i18n="connectorBullet1">Ship a `dist/index.js` ESM bundle.</li>
+          <li data-i18n="connectorBullet2">Add contract tests for search and stream resolution.</li>
+          <li data-i18n="connectorBullet3">Provide a docs demo page for quick validation.</li>
+        </ul>
+        <a class="doc-link" href="https://github.com/DancingMusic" data-i18n="viewConnectorExamples">View connector examples</a>
+      </article>
+
+      <article class="doc-card">
+        <h3 data-i18n="pluginTitle">Build a Dance plugin</h3>
+        <p data-i18n="pluginText">
+          Dance plugins receive audio and playback context from the app, then
+          render visual stages through the plugin lifecycle. The built-in Night
+          Sky stage follows the same host-facing plugin boundary.
+        </p>
+        <ul>
+          <li data-i18n="pluginBullet1">Keep rendering code inside the plugin.</li>
+          <li data-i18n="pluginBullet2">Use the shared audio analysis contract.</li>
+          <li data-i18n="pluginBullet3">Expose metadata so the app can list and activate the plugin.</li>
+        </ul>
+        <a class="doc-link" href="https://github.com/DancingMusic" data-i18n="explorePluginSdk">Explore plugin SDK</a>
+      </article>
+
+      <article class="doc-card">
+        <h3 data-i18n="verifyTitle">Verify downloads</h3>
+        <p data-i18n="verifyText">
+          Public packages are attached to the DancingMusic main repository
+          releases. Use the generated metadata to verify version, build
+          identity, and release status.
+        </p>
+        <ul>
+          <li data-i18n="verifyBullet1">Latest metadata is available at `releases.json`.</li>
+          <li data-i18n="verifyBullet2">Downloads are published as main repository release assets.</li>
+          <li data-i18n="verifyBullet3">Source release URLs are not used as public links.</li>
+        </ul>
+        <a class="doc-link" href="releases.json" data-i18n="openReleaseMetadata">Open release metadata</a>
+      </article>
+    </section>
+
+    <section class="release-panel" id="release-details" aria-label="Release details">
+      <p class="panel-label" data-i18n="releaseMetadata">Release metadata</p>
+      <p class="download-note" data-i18n="releaseNote">
+        This page is the root DancingMusic entry. It stays focused on app
+        downloads, package status, and integration notes.
       </p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="app/" id="launch-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Launch App
-        </a>
-        <a class="btn btn-secondary" href="https://github.com/DancingMusic" target="_blank" rel="noopener">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 00-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 011.84 1.24 2.56 2.56 0 003.5 1 2.56 2.56 0 01.76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 011.24-3.22 4.3 4.3 0 01.12-3.18s1-.32 3.3 1.23a11.38 11.38 0 016 0c2.28-1.55 3.29-1.23 3.29-1.23a4.3 4.3 0 01.12 3.18 4.64 4.64 0 011.23 3.22c0 4.61-2.81 5.63-5.48 5.92a2.86 2.86 0 01.82 2.22v3.29c0 .32.21.7.82.58A12 12 0 0012 .3"/></svg>
-          GitHub
-        </a>
+      <div class="download-actions">
+        <a class="secondary" href="releases.json" data-i18n="viewMetadataJson">View Metadata JSON</a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Features -->
-  <section class="features">
-    <h2>Features</h2>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <span class="feature-icon">&#127925;</span>
-        <h3>Audio-Reactive Visuals</h3>
-        <p>Web Audio API-driven frequency analysis feeds real-time data into Three.js and Butterchurn visualizers.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">&#129513;</span>
-        <h3>Plugin Ecosystem</h3>
-        <p>Install community visualizers from the plugin registry or build your own with the Plugin SDK.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">&#128187;</span>
-        <h3>Desktop &amp; Web</h3>
-        <p>Runs natively on macOS, Windows, and Linux via Electron, or directly in the browser.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">&#127899;</span>
-        <h3>Dance &amp; Song Store</h3>
-        <p>Browse, purchase, and publish dance visualizations and songs through built-in marketplace SDKs.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">&#127908;</span>
-        <h3>Local Music Support</h3>
-        <p>Drag and drop your own music files. Full playback controls with lyrics overlay support.</p>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon">&#9889;</span>
-        <h3>High Performance</h3>
-        <p>GPU-accelerated rendering with WebGL. Smart context management prevents resource exhaustion.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Architecture -->
-  <section class="architecture">
-    <div class="inner">
-      <h2>Architecture</h2>
-      <p>A modular monorepo with independent SDK submodules for clean separation of concerns.</p>
-      <div class="arch-table-wrap">
-      <table class="arch-table">
-        <thead>
-          <tr><th>Module</th><th>Responsibility</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>DancingMusic (Host)</td><td>UI, player, plugin loader, store integration, Electron/web runtime</td></tr>
-          <tr><td>DancingStoreSdk</td><td>Dance store capabilities — data models, API, auth, publish/purchase</td></tr>
-          <tr><td>MusicStoreSdk</td><td>Music store capabilities — data models, API, auth, publish/purchase</td></tr>
-          <tr><td>DancingPluginSdk</td><td>Plugin development SDK — types, lifecycle, audio data interfaces</td></tr>
-        </tbody>
-      </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2026 DancingMusic &middot; <a href="https://github.com/DancingMusic">Open Source on GitHub</a></p>
-  </footer>
-
+    <footer>
+      <span>DancingMusic</span>
+      <a href="releases.json" data-i18n="releaseMetadata">Release metadata</a>
+    </footer>
+  </main>
   <script>
-    const btn = document.getElementById('launch-btn');
-    fetch('app/index.html', { method: 'HEAD' }).then(r => {
-      if (!r.ok) btn.style.opacity = '.5';
-    }).catch(() => { btn.style.opacity = '.5'; });
+    const translations = {
+      en: {
+        brandSubtitle: "Official downloads and integration notes",
+        githubRepo: "GitHub repo",
+        eyebrow: "Download center",
+        heroTitle: "Download DancingMusic",
+        heroLead: "Get the right DancingMusic app for your device. This page detects your system, recommends the best available package, and keeps public downloads separated from the source build pipeline.",
+        viewAppDownloads: "View Downloads",
+        viewReleaseStatus: "View Release Status",
+        recommendedLabel: "Recommended for this device",
+        detectingSystem: "Detecting system",
+        checkingPlatform: "Checking your browser platform and matching it with the available DancingMusic packages.",
+        webAvailableNote: "The web app is available now and works directly in this browser.",
+        nativeUnavailableNote: "A native {platform} installer is not published yet. Electron packaging is configured; the installer download will appear here after release.",
+        openWebApp: "Open Web App",
+        nativeComingSoon: "Native App Coming Soon",
+        appChannels: "App channels",
+        version: "Version",
+        webApp: "Web App",
+        nativeApp: "Native App",
+        synced: "Synced",
+        pending: "Pending",
+        latestPrefix: "Latest",
+        availableApps: "Downloads",
+        available: "Available",
+        planned: "Planned",
+        configured: "Configured",
+        open: "Open",
+        webCardText: "Use the app directly in your browser. This is the recommended entry while native installers are being prepared.",
+        macApp: "Mac App",
+        macAppText: "Electron packaging supports macOS dmg/zip. Signed installers will appear here after release.",
+        desktopApp: "Desktop App",
+        desktopAppText: "Electron packaging supports Windows NSIS and Linux AppImage. Installers will appear here after release.",
+        mobileApp: "Mobile App",
+        mobileAppText: "Mobile packages will be listed here after the app channel is published.",
+        comingSoon: "Coming soon",
+        installerComingSoon: "Installer coming soon",
+        docsIntegration: "Docs and Integration",
+        sdkTitle: "Use Open SDK contracts",
+        sdkText: "DancingMusic keeps SDK contracts separate from the app host. Music connectors implement the MusicStore contract, while Dance visual plugins implement the DancingPluginSdk lifecycle.",
+        sdkBullet1: "Keep implementation repositories independent.",
+        sdkBullet2: "Build ESM bundles that can be loaded dynamically.",
+        sdkBullet3: "Pin production URLs to version tags instead of main branches.",
+        browseSdk: "Browse SDK repositories",
+        connectorTitle: "Publish a music connector",
+        connectorText: "A connector should expose search, playlist, stream URL, and optional lyrics capabilities through the public MusicStore interface.",
+        connectorBullet1: "Ship a `dist/index.js` ESM bundle.",
+        connectorBullet2: "Add contract tests for search and stream resolution.",
+        connectorBullet3: "Provide a docs demo page for quick validation.",
+        viewConnectorExamples: "View connector examples",
+        pluginTitle: "Build a Dance plugin",
+        pluginText: "Dance plugins receive audio and playback context from the app, then render visual stages through the plugin lifecycle. The built-in Night Sky stage follows the same host-facing plugin boundary.",
+        pluginBullet1: "Keep rendering code inside the plugin.",
+        pluginBullet2: "Use the shared audio analysis contract.",
+        pluginBullet3: "Expose metadata so the app can list and activate the plugin.",
+        explorePluginSdk: "Explore plugin SDK",
+        verifyTitle: "Verify downloads",
+        verifyText: "Published packages are attached to DancingMusic main repository releases. Use the generated metadata to verify version, build identity, and release status.",
+        verifyBullet1: "Latest metadata is available at `releases.json`.",
+        verifyBullet2: "Downloads are published as main repository release assets.",
+        verifyBullet3: "Source release URLs are not used as public links.",
+        openReleaseMetadata: "Open release metadata",
+        releaseMetadata: "Release metadata",
+        releaseNote: "This page is the root DancingMusic entry. It stays focused on app downloads, package status, and integration notes.",
+        viewMetadataJson: "View Metadata JSON"
+      },
+      zh: {
+        brandSubtitle: "官方下载与接入说明",
+        githubRepo: "GitHub 仓库",
+        eyebrow: "下载中心",
+        heroTitle: "下载 DancingMusic",
+        heroLead: "为当前设备选择合适的 DancingMusic 应用。页面会识别你的系统，推荐当前可用的下载方式，并把公开下载与源码构建流程分离。",
+        viewAppDownloads: "查看下载",
+        viewReleaseStatus: "查看发布状态",
+        recommendedLabel: "为当前设备推荐",
+        detectingSystem: "正在识别系统",
+        checkingPlatform: "正在识别浏览器平台，并匹配当前可用的 DancingMusic 安装包。",
+        webAvailableNote: "Web App 当前可用，可直接在这个浏览器中运行。",
+        nativeUnavailableNote: "当前还没有发布原生 {platform} 安装包。Electron 打包目标已配置，安装包发布后会在这里显示下载入口。",
+        openWebApp: "打开 Web App",
+        nativeComingSoon: "原生 APP 即将推出",
+        appChannels: "应用渠道",
+        version: "版本",
+        webApp: "Web 版",
+        nativeApp: "原生 APP",
+        synced: "同步时间",
+        pending: "待同步",
+        latestPrefix: "最新",
+        availableApps: "下载",
+        available: "可用",
+        planned: "规划中",
+        configured: "已配置",
+        open: "打开",
+        webCardText: "直接在浏览器中使用应用。在原生安装包准备好之前，这是当前推荐入口。",
+        macApp: "Mac 应用",
+        macAppText: "Electron 打包已支持 macOS dmg/zip。签名安装包发布后会展示在这里。",
+        desktopApp: "桌面应用",
+        desktopAppText: "Electron 打包已支持 Windows NSIS 与 Linux AppImage。安装包发布后会展示在这里。",
+        mobileApp: "移动应用",
+        mobileAppText: "iOS 或 Android 渠道发布后会展示在这里。",
+        comingSoon: "即将推出",
+        installerComingSoon: "安装包即将推出",
+        docsIntegration: "文档与接入",
+        sdkTitle: "接入开放 SDK 契约",
+        sdkText: "DancingMusic 将 SDK 契约与应用宿主分离。音乐连接器实现 MusicStore 契约，Dance 视觉插件实现 DancingPluginSdk 生命周期。",
+        sdkBullet1: "保持实现仓库独立。",
+        sdkBullet2: "构建可动态加载的 ESM bundle。",
+        sdkBullet3: "生产 URL 固定到版本 tag，而不是 main 分支。",
+        browseSdk: "浏览 SDK 仓库",
+        connectorTitle: "发布音乐连接器",
+        connectorText: "连接器应通过公开 MusicStore 接口暴露搜索、歌单、音频源和可选歌词能力。",
+        connectorBullet1: "发布 `dist/index.js` ESM bundle。",
+        connectorBullet2: "为搜索和音频源解析添加契约测试。",
+        connectorBullet3: "提供 docs 演示页用于快速验证。",
+        viewConnectorExamples: "查看连接器示例",
+        pluginTitle: "构建 Dance 插件",
+        pluginText: "Dance 插件从应用接收音频与播放上下文，再通过插件生命周期渲染视觉舞台。内置 Night Sky 舞台也遵循同一插件边界。",
+        pluginBullet1: "渲染代码保留在插件内部。",
+        pluginBullet2: "使用共享音频分析契约。",
+        pluginBullet3: "暴露元数据，便于应用列出和启用插件。",
+        explorePluginSdk: "查看插件 SDK",
+        verifyTitle: "校验下载",
+        verifyText: "已发布的包会挂到 DancingMusic 主仓库 Release。你可以使用生成的元数据校验版本、构建身份和发布状态。",
+        verifyBullet1: "最新元数据位于 `releases.json`。",
+        verifyBullet2: "下载包作为主仓库 Release 资产发布。",
+        verifyBullet3: "源码 release URL 不作为公开下载链接。",
+        openReleaseMetadata: "打开发布元数据",
+        releaseMetadata: "发布元数据",
+        releaseNote: "这个页面就是 DancingMusic 根入口，专注于 APP 下载、包状态和接入说明。",
+        viewMetadataJson: "查看元数据 JSON"
+      }
+    };
+
+    let currentLanguage = "en";
+    let currentMetadata = null;
+
+    const text = (id, value) => {
+      const node = document.getElementById(id);
+      if (node) node.textContent = value;
+    };
+
+    const href = (id, value) => {
+      const node = document.getElementById(id);
+      if (node) node.href = value;
+    };
+
+    const t = (key, params = {}) => {
+      let value = translations[currentLanguage][key] || translations.en[key] || key;
+      Object.entries(params).forEach(([name, replacement]) => {
+        value = value.replace(`{${name}}`, replacement);
+      });
+      return value;
+    };
+
+    const applyLanguage = (language) => {
+      currentLanguage = language;
+      document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        node.textContent = t(node.dataset.i18n);
+      });
+
+      document.querySelectorAll("[data-lang]").forEach((node) => {
+        node.classList.toggle("active", node.dataset.lang === language);
+      });
+
+      text("detectedPlatform", t("detectingSystem"));
+      text("platformNote", t("checkingPlatform"));
+      setDetectedPlatform();
+      renderReleaseMetadata();
+    };
+
+    const platformFromUserAgent = () => {
+      const userAgent = navigator.userAgent || "";
+      const platform = navigator.platform || "";
+      const touchMac = platform === "MacIntel" && navigator.maxTouchPoints > 1;
+
+      if (/iPhone|iPad|iPod/.test(userAgent) || touchMac) {
+        return { id: "mobile", label: "iOS / iPadOS" };
+      }
+      if (/Android/.test(userAgent)) {
+        return { id: "mobile", label: "Android" };
+      }
+      if (/Mac/.test(platform)) {
+        return { id: "macos", label: "macOS" };
+      }
+      if (/Win/.test(platform)) {
+        return { id: "desktop", label: "Windows" };
+      }
+      if (/Linux/.test(platform)) {
+        return { id: "desktop", label: "Linux" };
+      }
+      return { id: "web", label: "This browser" };
+    };
+
+    const nativeChannelStatus = (platformId) => {
+      const apps = currentMetadata && currentMetadata.current && currentMetadata.current.apps;
+      const channel = Array.isArray(apps) ? apps.find((app) => app.id === platformId) : null;
+      return channel && channel.status ? channel.status : "planned";
+    };
+
+    const setDetectedPlatform = () => {
+      const detected = platformFromUserAgent();
+      const nativeAvailable = detected.id === "web";
+      const channelStatus = nativeAvailable ? "available" : nativeChannelStatus(detected.id);
+      text("detectedPlatform", detected.label);
+      text(
+        "nativeChannelStatus",
+        channelStatus === "configured" ? t("configured") : t(channelStatus)
+      );
+      text(
+        "platformNote",
+        nativeAvailable
+          ? t("webAvailableNote")
+          : t("nativeUnavailableNote", { platform: detected.label })
+      );
+    };
+
+    const renderReleaseMetadata = () => {
+      const current = currentMetadata && currentMetadata.current;
+      if (!current) {
+        text("currentTag", t("checkingPlatform"));
+        text("releaseTag", t("pending"));
+        text("publishedAt", t("pending"));
+        return;
+      }
+
+      const tag = current.tag || "Unknown";
+      const published = current.publishedAt
+        ? new Date(current.publishedAt).toISOString().slice(0, 10)
+        : "Unknown";
+
+      text("currentTag", `${t("latestPrefix")}: ${tag}`);
+      text("releaseTag", tag);
+      text("publishedAt", published);
+      setDetectedPlatform();
+    };
+
+    document.querySelectorAll("[data-lang]").forEach((node) => {
+      node.addEventListener("click", () => applyLanguage(node.dataset.lang));
+    });
+
+    applyLanguage(currentLanguage);
+
+    fetch("releases.json", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : null)
+      .then((metadata) => {
+        currentMetadata = metadata;
+        renderReleaseMetadata();
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>
